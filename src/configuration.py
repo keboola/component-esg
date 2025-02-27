@@ -1,12 +1,36 @@
 import logging
-from pydantic import BaseModel, Field, ValidationError, field_validator
+import re
+
 from keboola.component.exceptions import UserException
+from pydantic import BaseModel, ValidationError, field_validator, model_validator
 
 
 class Configuration(BaseModel):
-    print_hello: bool
-    api_token: str = Field(alias="#api_token")
+    client_id: str
+    entity_period: str
+    reporting_period_id: int = 0
+    entity_id: int = 0
+    endpoint: str
+    template_id: str = ""
     debug: bool = False
+
+    @field_validator("client_id", "template_id")
+    def split_id_string(cls, v):
+        if v is not None and isinstance(v, str):
+            return int(v.split("-", 1)[0])
+        return v
+
+    @model_validator(mode="after")
+    def extract_entity_period_ids(self):
+        try:
+            match = re.match(r"(\d+)-.*?\s{3}(\d+)-", self.entity_period)
+            if not match:
+                raise ValueError("Invalid format for 'entity_period'. Expected '123-Period name   456-Entity name'.")
+            self.reporting_period_id = int(match.group(1))
+            self.entity_id = int(match.group(2))
+        except Exception as e:
+            raise UserException(f"Error parsing entity_period: {e}")
+        return self
 
     def __init__(self, **data):
         try:
@@ -17,9 +41,3 @@ class Configuration(BaseModel):
 
         if self.debug:
             logging.debug("Component will run in Debug mode")
-
-    @field_validator('api_token')
-    def token_must_be_uppercase(cls, v):
-        if not v.isupper():
-            raise UserException('API token must be uppercase')
-        return v

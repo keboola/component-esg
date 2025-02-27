@@ -1,19 +1,26 @@
 {
   "type": "object",
-  "title": "extractor configuration",
+  "title": "Connection",
   "required": [
-    "print_hello"
+    "client_id"
   ],
   "properties": {
-    "print_hello": {
-      "type": "boolean",
-      "title": "Print Hello",
+    "client_id": {
+      "enum": [],
+      "type": "string",
+      "items": {
+        "enum": [],
+        "type": "string"
+      },
+      "title": "Client ID",
+      "options": {
+        "async": {
+          "cache": false,
+          "label": "List Clients",
+          "action": "list_clients"
+        }
+      },
       "propertyOrder": 1
-    },
-    "debug": {
-      "type": "boolean",
-      "title": "Debug",
-      "propertyOrder": 2
     }
   }
 }
