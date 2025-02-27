@@ -1,18 +1,13 @@
 {
   "type": "object",
-  "title": "extractor configuration",
+  "title": "Connection",
   "required": [
-    "print_hello"
+    "client_id"
   ],
   "properties": {
-    "print_hello": {
-      "type": "boolean",
-      "title": "Print Hello",
-      "propertyOrder": 1
-    },
-    "debug": {
-      "type": "boolean",
-      "title": "Debug",
+    "client_id": {
+      "type": "string",
+      "title": "Client ID",
       "propertyOrder": 2
     }
   }

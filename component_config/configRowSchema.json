@@ -1,1 +1,128 @@
-{}
+{
+  "type": "object",
+  "title": "Component configuration",
+  "required": [
+    "entity_id",
+    "client_reporting_period_id",
+    "endpoint",
+    "data_template"
+  ],
+  "properties": {
+    "entity_id": {
+      "enum": [],
+      "type": "string",
+      "items": {
+        "enum": [],
+        "type": "string"
+      },
+      "title": "Entity ID",
+      "options": {
+        "async": {
+          "cache": false,
+          "label": "List Entities",
+          "action": "list_entities",
+          "autoload": []
+        }
+      },
+      "propertyOrder": 1
+    },
+    "client_reporting_period_id": {
+      "enum": [],
+      "type": "string",
+      "items": {
+        "enum": [],
+        "type": "string"
+      },
+      "title": "Reporting Period ID",
+      "options": {
+        "async": {
+          "cache": false,
+          "label": "List Reporting Periods",
+          "action": "list_reporting_periods",
+          "autoload": []
+        }
+      },
+      "propertyOrder": 2
+    },
+    "endpoint": {
+      "enum": [
+        "franchises",
+        "intensity_metrics",
+        "investments",
+        "water_storage",
+        "employee_benefits",
+        "social_protection",
+        "locations",
+        "non_compliance",
+        "generic"
+      ],
+      "type": "string",
+      "title": "Compression",
+      "default": "generic",
+      "options": {
+        "enum_titles": [
+          "Franchises",
+          "Intensity metrics",
+          "Investments",
+          "Water storage",
+          "Employee benefits",
+          "Social protection",
+          "Locations",
+          "Non compliance",
+          "Generic"
+        ]
+      },
+      "required": true,
+      "propertyOrder": 3
+    },
+    "template_id": {
+      "enum": [],
+      "type": "string",
+      "items": {
+        "enum": [],
+        "type": "string"
+      },
+      "title": "Report Template ID",
+      "options": {
+        "async": {
+          "cache": false,
+          "label": "List Templates",
+          "action": "list_templates",
+          "autoload": []
+        },
+        "dependencies": {
+          "endpoint": "generic"
+        }
+      },
+      "propertyOrder": 4
+    },
+    "investment_table_destination": {
+      "type": "string",
+      "title": "Investment table destination name",
+      "options": {
+        "dependencies": {
+          "endpoint": "investments"
+        }
+      },
+      "propertyOrder": 5
+    },
+    "finance_table_destination": {
+      "type": "string",
+      "title": "Finance table destination name",
+      "options": {
+        "dependencies": {
+          "endpoint": "investments"
+        }
+      },
+      "propertyOrder": 6
+    },
+    "debug": {
+      "type": "boolean",
+      "title": "Debug mode",
+      "format": "checkbox",
+      "default": false,
+      "description": "If enabled, the component will produce detailed logs",
+      "propertyOrder": 7
+    }
+  }
+}
