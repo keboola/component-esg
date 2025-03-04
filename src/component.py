@@ -26,6 +26,11 @@ class Component(ComponentBase):
         self.client = None
 
     def run(self):
+
+        self.list_entities()
+
+        logging.info("ok")
+
         self.client = EsgClient(self.refresh_tokens())
         self.download_lookup_tables()
 
