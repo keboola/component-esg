@@ -6,6 +6,9 @@ Template Component main class.
 import csv
 import logging
 import requests
+from io import StringIO
+from wurlitzer import pipes
+
 
 from keboola.component.base import ComponentBase, sync_action
 from keboola.component.exceptions import UserException
@@ -20,9 +23,10 @@ class Component(ComponentBase):
     def __init__(self):
         super().__init__()
         self.params = Configuration(**self.configuration.parameters)
-        self.client = EsgClient(self.refresh_tokens())
+        self.client = None
 
     def run(self):
+        self.client = EsgClient(self.refresh_tokens())
         self.download_lookup_tables()
 
         # Define endpoint to method mapping
@@ -444,18 +448,27 @@ class Component(ComponentBase):
 
     @sync_action("list_entities")
     def list_entities(self):
-        entities = self.client.get_entities(self.params.client_id)
-        return [SelectElement(value, label) for value, label in entities.items()]
+        out = StringIO()
+        with pipes(stdout=out, stderr=out):
+            self.client = EsgClient(self.refresh_tokens())
+            entities = self.client.get_entities(self.params.client_id)
+            return [SelectElement(value, label) for value, label in entities.items()]
 
     @sync_action("list_reporting_periods")
     def list_reporting_periods(self):
-        entities = self.client.get_reporting_periods(self.params.client_id)
-        return [SelectElement(value, label) for value, label in entities.items()]
+        out = StringIO()
+        with pipes(stdout=out, stderr=out):
+            self.client = EsgClient(self.refresh_tokens())
+            entities = self.client.get_reporting_periods(self.params.client_id)
+            return [SelectElement(value, label) for value, label in entities.items()]
 
     @sync_action("list_templates")
     def list_templates(self):
-        templates = self.client.get_template_structure()
-        return [SelectElement(val["templateId"], val["templateName"]) for val in templates]
+        out = StringIO()
+        with pipes(stdout=out, stderr=out):
+            self.client = EsgClient(self.refresh_tokens())
+            templates = self.client.get_template_structure()
+            return [SelectElement(val["templateId"], val["templateName"]) for val in templates]
 
 
 """

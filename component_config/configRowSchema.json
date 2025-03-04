@@ -38,8 +38,7 @@
         "async": {
           "cache": false,
           "label": "List Reporting Periods",
-          "action": "list_reporting_periods",
-          "autoload": []
+          "action": "list_reporting_periods"
         }
       },
       "propertyOrder": 2
@@ -87,8 +86,7 @@
         "async": {
           "cache": false,
           "label": "List Templates",
-          "action": "list_templates",
-          "autoload": []
+          "action": "list_templates"
         },
         "dependencies": {
           "endpoint": "generic"
