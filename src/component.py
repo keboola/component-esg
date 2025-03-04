@@ -30,9 +30,10 @@ class Component(ComponentBase):
         self.list_entities()
 
         logging.info("ok")
+        exit(0)
 
         self.client = EsgClient(self.refresh_tokens())
-        self.download_lookup_tables()
+        # self.download_lookup_tables()
 
         # Define endpoint to method mapping
         endpoint_to_method = {
