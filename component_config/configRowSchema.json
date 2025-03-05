@@ -4,8 +4,7 @@
   "required": [
     "entity_id",
     "client_reporting_period_id",
-    "endpoint",
-    "data_template"
+    "endpoint"
   ],
   "properties": {
     "entity_id": {
@@ -20,8 +19,7 @@
         "async": {
           "cache": false,
           "label": "List Entities",
-          "action": "list_entities",
-          "autoload": []
+          "action": "list_entities"
         }
       },
       "propertyOrder": 1

@@ -4,9 +4,9 @@ from keboola.component.exceptions import UserException
 
 
 class Configuration(BaseModel):
-    client_id: int
-    entity_id: int
-    client_reporting_period_id: int
+    client_id: int = None
+    entity_id: int = None
+    client_reporting_period_id: int = None
     endpoint: str
     template_id: int = None
     debug: bool = False

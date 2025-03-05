@@ -405,12 +405,12 @@ class Component(ComponentBase):
         logging.info(result)
 
     def import_generic_data(
-        self, entity_id: int, client_reporting_period_id: int, template_id: int, data: list
+        self, entity_id: int, client_reporting_period_id: int, data: list
     ):
         result = self.client.import_generic_data(
             entity_id=entity_id,
             client_reporting_period_id=client_reporting_period_id,
-            template_id=template_id,
+            template_id=self.params.template_id,
             data=data,
         )
         logging.info(result)
