@@ -131,7 +131,7 @@ class Component(ComponentBase):
 
         for lookup in lookups:
             data = self.client.get_lookup_data(lookup)
-            out_table = self.create_out_table_definition(name=f"lookup_table_{lookup}")
+            out_table = self.create_out_table_definition(name=f"lookup_table-{lookup.replace(' ', '_')}")
             with open(out_table.full_path, "w", newline="") as out:
                 writer = csv.writer(out)
                 writer.writerow(["value"])

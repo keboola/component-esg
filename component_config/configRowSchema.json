@@ -94,26 +94,6 @@
       },
       "propertyOrder": 4
     },
-    "investment_table_destination": {
-      "type": "string",
-      "title": "Investment table destination name",
-      "options": {
-        "dependencies": {
-          "endpoint": "investments"
-        }
-      },
-      "propertyOrder": 5
-    },
-    "finance_table_destination": {
-      "type": "string",
-      "title": "Finance table destination name",
-      "options": {
-        "dependencies": {
-          "endpoint": "investments"
-        }
-      },
-      "propertyOrder": 6
-    },
     "debug": {
       "type": "boolean",
       "title": "Debug mode",
