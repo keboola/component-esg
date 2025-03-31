@@ -6,24 +6,26 @@ from pydantic import BaseModel, ValidationError, field_validator, model_validato
 
 
 class Configuration(BaseModel):
-    client_id: str
-    entity_period: str
+    client_id: str = ""
+    entity_period: str = ""
     reporting_period_id: int = 0
     entity_id: int = 0
-    endpoint: str
+    endpoint: str = ""
     template_id: str = ""
     debug: bool = False
 
     @field_validator("client_id", "template_id")
     def split_id_string(cls, v):
-        if v is not None and isinstance(v, str):
+        if v != "" and isinstance(v, str):
             return int(v.split("-", 1)[0])
         return v
 
     @model_validator(mode="after")
     def extract_entity_period_ids(self):
+        if not self.entity_period:
+            return self
         try:
-            match = re.match(r"(\d+)-.*?\s{3}(\d+)-", self.entity_period)
+            match = re.match(r"(\d+)-.*?_{3}(\d+)", self.entity_period)
             if not match:
                 raise ValueError("Invalid format for 'entity_period'. Expected '123-Period name   456-Entity name'.")
             self.reporting_period_id = int(match.group(1))
