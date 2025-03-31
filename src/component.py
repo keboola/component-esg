@@ -420,7 +420,7 @@ class Component(ComponentBase):
             data = self.client.get_entities_with_periods(self.params.client_id)
 
             return [
-                SelectElement(value=f"{pid}-{pname}___{eid}-{ename}")
+                SelectElement(value=f"{pid}-{pname}   {eid}-{ename}")
                 for pid, pname in data["reportingPeriods"].items()
                 for eid, ename in data["entities"].items()
             ]
