@@ -67,9 +67,6 @@ class Component(ComponentBase):
                 finance_data=finance_data,
             )
 
-        elif self.params.endpoint == "download_lookup_tables":
-            self.download_lookup_tables()
-
         else:
             if len(in_tables) != 1:
                 raise UserException("Please provide exactly 1 table in input mapping.")
@@ -116,42 +113,6 @@ class Component(ComponentBase):
             {"#refresh_token": data["refresh_token"], "auth_id": self.configuration.oauth_credentials.id}
         )
         return data["id_token"]
-
-    def download_lookup_tables(self) -> None:
-        lookups = self.get_lookup_tables_names()
-
-        lookups.update(
-            [
-                "NonCompliance-CategoryOfSanction",
-                "ProjectFinanceAndDebtInvestment_InvestmentType",
-                "EquityInvestment_InvestmentType",
-                "TypeOfIntensityMetric",
-            ]
-        )
-
-        for lookup in lookups:
-            data = self.client.get_lookup_data(lookup)
-            out_table = self.create_out_table_definition(name=f"lookup_table-{lookup.replace(' ', '_')}")
-            with open(out_table.full_path, "w", newline="") as out:
-                writer = csv.writer(out)
-                writer.writerow(["value"])
-                for row in data:
-                    writer.writerow([row])
-            self.write_manifest(out_table)
-
-    def get_lookup_tables_names(self) -> set[str]:
-        lookups = []
-        templates = self.client.get_template_structure()
-
-        for template in templates:
-            for column in template["columnsConfiguration"]:
-                if column["columnType"] == "Lookup":
-                    if column.get("lookupName"):
-                        lookups.append(column["lookupName"])
-                    else:
-                        logging.info(f"Can't find lookup name for: {template.get('templateName')} for column: {column}")
-
-        return set(lookups)
 
     def import_franchises_ui_data(self, entity_id, reporting_period_id, data):
         result = self.client.import_franchises_ui_data(
