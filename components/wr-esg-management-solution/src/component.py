@@ -6,16 +6,16 @@ Template Component main class.
 import csv
 import logging
 from io import StringIO
-
 import requests
+
 from keboola.component.base import ComponentBase, sync_action
 from keboola.component.exceptions import UserException
 from keboola.component.sync_actions import SelectElement
 from wurlitzer import pipes
 
-from configuration import Configuration
 # from components.common.src.esg_client import EsgClient
 from common.src.esg_client import EsgClient
+from configuration import Configuration
 
 
 class Component(ComponentBase):
@@ -46,14 +46,20 @@ class Component(ComponentBase):
                     "Investments endpoints needs 2 tables in input mapping: project finance, equity investments "
                 )
 
-            investments_table = [table for table in in_tables if "share_of_equity" in table.schema][0]
+            investments_table = [
+                table for table in in_tables if "share_of_equity" in table.schema
+            ][0]
             investments_data = []
             with open(investments_table.full_path, "r", encoding="utf-8") as f:
                 reader = csv.DictReader(f)
                 for row in reader:
                     investments_data.append(row)
 
-            finance_table = [table for table in in_tables if "share_of_total_project_cost" in table.schema][0]
+            finance_table = [
+                table
+                for table in in_tables
+                if "share_of_total_project_cost" in table.schema
+            ][0]
             finance_data = []
             with open(finance_table.full_path, "r", encoding="utf-8") as f:
                 reader = csv.DictReader(f)
@@ -78,17 +84,24 @@ class Component(ComponentBase):
                     data.append(row)
 
             endpoint_to_method[self.params.endpoint](
-                entity_id=self.params.entity_id, reporting_period_id=self.params.reporting_period_id, data=data
+                entity_id=self.params.entity_id,
+                reporting_period_id=self.params.reporting_period_id,
+                data=data,
             )
 
     def refresh_tokens(self) -> str:
         statefile = self.get_state_file()
-        if statefile.get("#refresh_token") and statefile.get("auth_id") == self.configuration.oauth_credentials.id:
+        if (
+            statefile.get("#refresh_token")
+            and statefile.get("auth_id") == self.configuration.oauth_credentials.id
+        ):
             logging.debug("Using refresh token from state file")
             refresh_token = statefile.get("#refresh_token")
         else:
             logging.debug("Using refresh token from configuration")
-            refresh_token = self.configuration.oauth_credentials.data.get("refresh_token")
+            refresh_token = self.configuration.oauth_credentials.data.get(
+                "refresh_token"
+            )
 
         client_id = self.configuration.oauth_credentials.appKey
         client_secret = self.configuration.oauth_credentials.appSecret
@@ -110,7 +123,10 @@ class Component(ComponentBase):
             )
         data = response.json()
         self.write_state_file(
-            {"#refresh_token": data["refresh_token"], "auth_id": self.configuration.oauth_credentials.id}
+            {
+                "#refresh_token": data["refresh_token"],
+                "auth_id": self.configuration.oauth_credentials.id,
+            }
         )
         return data["id_token"]
 
@@ -124,7 +140,9 @@ class Component(ComponentBase):
         )
         logging.info(result)
 
-    def import_intensity_metrics_ui_data(self, entity_id: int, reporting_period_id: int, data: list):
+    def import_intensity_metrics_ui_data(
+        self, entity_id: int, reporting_period_id: int, data: list
+    ):
         processed_data = []
         for row in data:
             processed_row = {}
@@ -140,7 +158,9 @@ class Component(ComponentBase):
                     processed_row[key] = value
             processed_data.append(processed_row)
 
-        logging.info(f"Importing {len(processed_data)} intensity metrics data to ESG API...")
+        logging.info(
+            f"Importing {len(processed_data)} intensity metrics data to ESG API..."
+        )
         result = self.client.import_intensity_metrics_ui_data(
             entity_id=entity_id,
             reporting_period_id=reporting_period_id,
@@ -151,7 +171,11 @@ class Component(ComponentBase):
         logging.info(result)
 
     def import_investments_ui_data(
-        self, entity_id: int, reporting_period_id: int, investments_data: list, finance_data: list
+        self,
+        entity_id: int,
+        reporting_period_id: int,
+        investments_data: list,
+        finance_data: list,
     ):
         result = self.client.import_investments_ui_data(
             entity_id=entity_id,
@@ -163,7 +187,9 @@ class Component(ComponentBase):
         )
         logging.info(result)
 
-    def import_water_storage_ui_data(self, entity_id: int, reporting_period_id: int, data: list):
+    def import_water_storage_ui_data(
+        self, entity_id: int, reporting_period_id: int, data: list
+    ):
         result = self.client.import_water_storage_ui_data(
             entity_id=entity_id,
             reporting_period_id=reporting_period_id,
@@ -173,7 +199,9 @@ class Component(ComponentBase):
         )
         logging.info(result)
 
-    def import_employee_benefits_ui_data(self, entity_id: int, reporting_period_id: int, data: list):
+    def import_employee_benefits_ui_data(
+        self, entity_id: int, reporting_period_id: int, data: list
+    ):
         grouped_data = {}
         for row in data:
             location = row["location"]
@@ -224,13 +252,15 @@ class Component(ComponentBase):
                             "partTimeEmployeesWithPermanentContract": row["part_time_permanent"],
                             "fullTimeEmployeesWithTemporaryContract": row["full_time_temporary"],
                             "partTimeEmployeesWithTemporaryContract": row["part_time_temporary"],
-                        }
+                        }  # fmt: skip
 
                 location_data["significantLocations"].append(sig_location_data)
 
             result_data.append(location_data)
 
-        logging.info(f"Importing employee benefits data for {len(result_data)} locations to ESG API...")
+        logging.info(
+            f"Importing employee benefits data for {len(result_data)} locations to ESG API..."
+        )
         result = self.client.import_benefit_for_employees_ui_data(
             entity_id=entity_id,
             reporting_period_id=reporting_period_id,
@@ -240,7 +270,9 @@ class Component(ComponentBase):
         )
         logging.info(result)
 
-    def import_social_protection_ui_data(self, entity_id: int, reporting_period_id: int, data: list):
+    def import_social_protection_ui_data(
+        self, entity_id: int, reporting_period_id: int, data: list
+    ):
         location_groups = {}
         for row in data:
             location = row["location"]
@@ -253,7 +285,11 @@ class Component(ComponentBase):
         for location, rows in location_groups.items():
             recorded = rows[0]["recorded"].lower() == "true"
 
-            location_data = {"location": location, "recorded": recorded, "countries": []}
+            location_data = {
+                "location": location,
+                "recorded": recorded,
+                "countries": [],
+            }
 
             country_groups = {}
             for row in rows:
@@ -294,7 +330,7 @@ class Component(ComponentBase):
                             "employees": int(row["retirement_employees"]),
                             "other_worker": int(row["retirement_other_worker"]),
                         },
-                    }
+                    }  # fmt: skip
 
                     country_data["type_of_contract"].append(contract_data)
 
@@ -302,7 +338,9 @@ class Component(ComponentBase):
 
             result_data.append(location_data)
 
-        logging.info(f"Importing social protection data for {len(result_data)} locations to ESG API...")
+        logging.info(
+            f"Importing social protection data for {len(result_data)} locations to ESG API..."
+        )
         result = self.client.import_social_protection_ui_data(
             entity_id=entity_id,
             reporting_period_id=reporting_period_id,
@@ -312,7 +350,9 @@ class Component(ComponentBase):
         )
         logging.info(result)
 
-    def import_non_compliance_ui_data(self, entity_id: int, reporting_period_id: int, data: list):
+    def import_non_compliance_ui_data(
+        self, entity_id: int, reporting_period_id: int, data: list
+    ):
         processed_data = []
         for row in data:
             processed_row = {}
@@ -325,7 +365,9 @@ class Component(ComponentBase):
                     processed_row[key] = value
             processed_data.append(processed_row)
 
-        logging.info(f"Importing {len(processed_data)} non-compliance incidents to ESG API...")
+        logging.info(
+            f"Importing {len(processed_data)} non-compliance incidents to ESG API..."
+        )
         result = self.client.import_non_compliance_ui_data(
             entity_id=entity_id,
             reporting_period_id=reporting_period_id,
@@ -335,7 +377,9 @@ class Component(ComponentBase):
         )
         logging.info(result)
 
-    def import_locations_ui_data(self, entity_id: int, reporting_period_id: int, data: list):
+    def import_locations_ui_data(
+        self, entity_id: int, reporting_period_id: int, data: list
+    ):
         processed_data = []
         for row in data:
             location_entry = {
@@ -343,7 +387,7 @@ class Component(ComponentBase):
                 "enviromentalInputtemplateId": [int(x) for x in row["environmental_template_ids"].split(";")],
                 "governanceInputtemplateId": [int(x) for x in row["governance_template_ids"].split(";")],
                 "socialInputtemplateId": [int(x) for x in row["social_template_ids"].split(";")],
-            }
+            }  # fmt: skip
             processed_data.append(location_entry)
 
         logging.info(f"Importing {len(processed_data)} locations to ESG API...")
@@ -372,7 +416,10 @@ class Component(ComponentBase):
         with pipes(stdout=out, stderr=out):
             self.client = EsgClient(self.refresh_tokens())
             clients = self.client.get_clients()
-            return [SelectElement(value=f"{client['id']}-{client['name']}") for client in clients]
+            return [
+                SelectElement(value=f"{client['id']}-{client['name']}")
+                for client in clients
+            ]
 
     @sync_action("list_entities_with_periods")
     def list_entities_with_periods(self) -> list[SelectElement]:
@@ -393,7 +440,10 @@ class Component(ComponentBase):
         with pipes(stdout=out, stderr=out):
             self.client = EsgClient(self.refresh_tokens())
             entities = self.client.get_entities(self.params.client_id)
-            return [SelectElement(value=f"{value}-{label}") for value, label in entities.items()]
+            return [
+                SelectElement(value=f"{value}-{label}")
+                for value, label in entities.items()
+            ]
 
     @sync_action("list_reporting_periods")
     def list_reporting_periods(self) -> list[SelectElement]:
@@ -401,7 +451,10 @@ class Component(ComponentBase):
         with pipes(stdout=out, stderr=out):
             self.client = EsgClient(self.refresh_tokens())
             entities = self.client.get_reporting_periods(self.params.client_id)
-            return [SelectElement(value=f"{value}-{label}") for value, label in entities.items()]
+            return [
+                SelectElement(value=f"{value}-{label}")
+                for value, label in entities.items()
+            ]
 
     @sync_action("list_templates")
     def list_templates(self) -> list[SelectElement]:
@@ -409,7 +462,10 @@ class Component(ComponentBase):
         with pipes(stdout=out, stderr=out):
             self.client = EsgClient(self.refresh_tokens())
             templates = self.client.get_template_structure()
-            return [SelectElement(value=f"{val['templateId']}-{val['templateName']}") for val in templates]
+            return [
+                SelectElement(value=f"{val['templateId']}-{val['templateName']}")
+                for val in templates
+            ]
 
 
 """

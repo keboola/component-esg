@@ -8,14 +8,15 @@ import logging
 from io import StringIO
 
 import requests
+
 from keboola.component.base import ComponentBase, sync_action
 from keboola.component.exceptions import UserException
 from keboola.component.sync_actions import SelectElement
 from wurlitzer import pipes
 
-from configuration import Configuration
 # from components.common.src.esg_client import EsgClient
 from common.src.esg_client import EsgClient
+from configuration import Configuration
 
 
 class Component(ComponentBase):
@@ -30,16 +31,19 @@ class Component(ComponentBase):
         if self.params.endpoint == "download_lookup_tables":
             self.download_lookup_tables()
 
-
-
     def refresh_tokens(self) -> str:
         statefile = self.get_state_file()
-        if statefile.get("#refresh_token") and statefile.get("auth_id") == self.configuration.oauth_credentials.id:
+        if (
+            statefile.get("#refresh_token")
+            and statefile.get("auth_id") == self.configuration.oauth_credentials.id
+        ):
             logging.debug("Using refresh token from state file")
             refresh_token = statefile.get("#refresh_token")
         else:
             logging.debug("Using refresh token from configuration")
-            refresh_token = self.configuration.oauth_credentials.data.get("refresh_token")
+            refresh_token = self.configuration.oauth_credentials.data.get(
+                "refresh_token"
+            )
 
         client_id = self.configuration.oauth_credentials.appKey
         client_secret = self.configuration.oauth_credentials.appSecret
@@ -61,7 +65,10 @@ class Component(ComponentBase):
             )
         data = response.json()
         self.write_state_file(
-            {"#refresh_token": data["refresh_token"], "auth_id": self.configuration.oauth_credentials.id}
+            {
+                "#refresh_token": data["refresh_token"],
+                "auth_id": self.configuration.oauth_credentials.id,
+            }
         )
         return data["id_token"]
 
@@ -79,7 +86,9 @@ class Component(ComponentBase):
 
         for lookup in lookups:
             data = self.client.get_lookup_data(lookup)
-            out_table = self.create_out_table_definition(name=f"lookup_table-{lookup.replace(' ', '_')}")
+            out_table = self.create_out_table_definition(
+                name=f"lookup_table-{lookup.replace(' ', '_')}"
+            )
             with open(out_table.full_path, "w", newline="") as out:
                 writer = csv.writer(out)
                 writer.writerow(["value"])
@@ -97,10 +106,11 @@ class Component(ComponentBase):
                     if column.get("lookupName"):
                         lookups.append(column["lookupName"])
                     else:
-                        logging.info(f"Can't find lookup name for: {template.get('templateName')} for column: {column}")
+                        logging.info(
+                            f"Can't find lookup name for: {template.get('templateName')} for column: {column}"
+                        )
 
         return set(lookups)
-
 
     @sync_action("list_clients")
     def list_clients(self) -> list[SelectElement]:
@@ -108,7 +118,10 @@ class Component(ComponentBase):
         with pipes(stdout=out, stderr=out):
             self.client = EsgClient(self.refresh_tokens())
             clients = self.client.get_clients()
-            return [SelectElement(value=f"{client['id']}-{client['name']}") for client in clients]
+            return [
+                SelectElement(value=f"{client['id']}-{client['name']}")
+                for client in clients
+            ]
 
     @sync_action("list_entities_with_periods")
     def list_entities_with_periods(self) -> list[SelectElement]:
@@ -129,7 +142,10 @@ class Component(ComponentBase):
         with pipes(stdout=out, stderr=out):
             self.client = EsgClient(self.refresh_tokens())
             entities = self.client.get_entities(self.params.client_id)
-            return [SelectElement(value=f"{value}-{label}") for value, label in entities.items()]
+            return [
+                SelectElement(value=f"{value}-{label}")
+                for value, label in entities.items()
+            ]
 
     @sync_action("list_reporting_periods")
     def list_reporting_periods(self) -> list[SelectElement]:
@@ -137,7 +153,10 @@ class Component(ComponentBase):
         with pipes(stdout=out, stderr=out):
             self.client = EsgClient(self.refresh_tokens())
             entities = self.client.get_reporting_periods(self.params.client_id)
-            return [SelectElement(value=f"{value}-{label}") for value, label in entities.items()]
+            return [
+                SelectElement(value=f"{value}-{label}")
+                for value, label in entities.items()
+            ]
 
     @sync_action("list_templates")
     def list_templates(self) -> list[SelectElement]:
@@ -145,7 +164,10 @@ class Component(ComponentBase):
         with pipes(stdout=out, stderr=out):
             self.client = EsgClient(self.refresh_tokens())
             templates = self.client.get_template_structure()
-            return [SelectElement(value=f"{val['templateId']}-{val['templateName']}") for val in templates]
+            return [
+                SelectElement(value=f"{val['templateId']}-{val['templateName']}")
+                for val in templates
+            ]
 
 
 """

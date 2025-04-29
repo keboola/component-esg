@@ -6,20 +6,38 @@ from keboola.http_client import HttpClient
 BASE_URL = "https://esg-externalintegrationapi-keboola-stg.azurewebsites.net/api/"
 
 ENDPOINT_GET_CLIENTS = "ExternalIntegration/ClientData/GetClientIds"
-ENDPOINT_GET_ENTITIES_WITH_PERIODS = "ExternalIntegration/ClientData/GetEntitiesWithReportingPeriods"
+ENDPOINT_GET_ENTITIES_WITH_PERIODS = (
+    "ExternalIntegration/ClientData/GetEntitiesWithReportingPeriods"
+)
 ENDPOINT_GET_ENTITIES = "ExternalIntegration/ClientData/GetEntities"
 ENDPOINT_GET_REPORTING_PERIODS = "ExternalIntegration/ClientData/GetReportingPeriods"
 ENDPOINT_GET_LOOKUP_DATA = "ExternalIntegration/LookupData/GetLookupData"
 ENDPOINT_GET_TEMPLATE_STRUCTURE = "ExternalIntegration/TemplateData/TemplatesStructure"
 
-ENDPOINT_IMPORT_FRANCHISES_UI_DATA = "ExternalIntegration/TemplateData/ImportFranchisesUiData"
-ENDPOINT_IMPORT_INTENSITY_METRICS_UI_DATA = "ExternalIntegration/TemplateData/ImportIntensityMetricsUiData"
-ENDPOINT_IMPORT_INVESTMENTS_UI_DATA = "ExternalIntegration/TemplateData/ImportInvestmentsUiData"
-ENDPOINT_IMPORT_WATER_STORAGE_UI_DATA = "ExternalIntegration/TemplateData/ImportWaterStorageUiData"
-ENDPOINT_IMPORT_BENEFIT_FOR_EMPLOYEES_UI_DATA = "ExternalIntegration/TemplateData/ImportBenefitForEmployeesUiData"
-ENDPOINT_IMPORT_SOCIAL_PROTECTION_UI_DATA = "ExternalIntegration/TemplateData/ImportSocialProtectionUiData"
-ENDPOINT_IMPORT_NON_COMPLIANCE_UI_DATA = "ExternalIntegration/TemplateData/ImportNonComplianceUiData"
-ENDPOINT_IMPORT_LOCATIONS_UI_DATA = "ExternalIntegration/TemplateData/ImportLocationsUiData"
+ENDPOINT_IMPORT_FRANCHISES_UI_DATA = (
+    "ExternalIntegration/TemplateData/ImportFranchisesUiData"
+)
+ENDPOINT_IMPORT_INTENSITY_METRICS_UI_DATA = (
+    "ExternalIntegration/TemplateData/ImportIntensityMetricsUiData"
+)
+ENDPOINT_IMPORT_INVESTMENTS_UI_DATA = (
+    "ExternalIntegration/TemplateData/ImportInvestmentsUiData"
+)
+ENDPOINT_IMPORT_WATER_STORAGE_UI_DATA = (
+    "ExternalIntegration/TemplateData/ImportWaterStorageUiData"
+)
+ENDPOINT_IMPORT_BENEFIT_FOR_EMPLOYEES_UI_DATA = (
+    "ExternalIntegration/TemplateData/ImportBenefitForEmployeesUiData"
+)
+ENDPOINT_IMPORT_SOCIAL_PROTECTION_UI_DATA = (
+    "ExternalIntegration/TemplateData/ImportSocialProtectionUiData"
+)
+ENDPOINT_IMPORT_NON_COMPLIANCE_UI_DATA = (
+    "ExternalIntegration/TemplateData/ImportNonComplianceUiData"
+)
+ENDPOINT_IMPORT_LOCATIONS_UI_DATA = (
+    "ExternalIntegration/TemplateData/ImportLocationsUiData"
+)
 ENDPOINT_IMPORT_GENERIC_DATA = "ExternalIntegration/TemplateData/ImportGenericData"
 
 BATCHE_SIZE = 100
@@ -31,18 +49,25 @@ class EsgClient(HttpClient):
         if id_token:
             self.update_auth_header({"Authorization": f"Bearer {id_token}"})
 
-    def _make_request(self, method: Callable, endpoint_path: str, error_message: str, **kwargs) -> Dict[str, Any]:
+    def _make_request(
+        self, method: Callable, endpoint_path: str, error_message: str, **kwargs
+    ) -> Dict[str, Any]:
         try:
             response = method(endpoint_path=endpoint_path, **kwargs)
             response.raise_for_status()
 
             if response.status_code != 200:
-                raise UserException(f"Request to {endpoint_path} failed with status code {response.status_code},"
-                                    f"{response.text}")
+                raise UserException(
+                    f"Request to {endpoint_path} failed with status code {response.status_code},"
+                    f"{response.text}"
+                )
 
             # Handle empty response
             if not response.text:
-                return {"status": "success", "message": f"Request to {endpoint_path} completed successfully"}
+                return {
+                    "status": "success",
+                    "message": f"Request to {endpoint_path} completed successfully",
+                }
 
             return response.json()
         except Exception as e:
@@ -81,10 +106,17 @@ class EsgClient(HttpClient):
             **extra_fields,
         }
 
-        return self._make_request(self.post_raw, endpoint, f"Failed to import data to {endpoint}", json=payload)
+        return self._make_request(
+            self.post_raw,
+            endpoint,
+            f"Failed to import data to {endpoint}",
+            json=payload,
+        )
 
     def get_clients(self) -> Dict[str, Any]:
-        return self._make_request(self.get_raw, ENDPOINT_GET_CLIENTS, "Failed to retrieve clients")
+        return self._make_request(
+            self.get_raw, ENDPOINT_GET_CLIENTS, "Failed to retrieve clients"
+        )
 
     def get_entities_with_periods(self, client_id: int) -> Dict[str, Any]:
         return self._make_request(
@@ -96,7 +128,10 @@ class EsgClient(HttpClient):
 
     def get_entities(self, client_id: int) -> Dict[str, Any]:
         return self._make_request(
-            self.get_raw, ENDPOINT_GET_ENTITIES, "Failed to retrieve entities", params={"clientId": client_id}
+            self.get_raw,
+            ENDPOINT_GET_ENTITIES,
+            "Failed to retrieve entities",
+            params={"clientId": client_id},
         )
 
     def get_reporting_periods(self, client_id: int) -> Dict[str, Any]:
@@ -109,12 +144,17 @@ class EsgClient(HttpClient):
 
     def get_lookup_data(self, lookup_name: str) -> Dict[str, Any]:
         return self._make_request(
-            self.get_raw, ENDPOINT_GET_LOOKUP_DATA, "Failed to retrieve lookup data", params={"lookupName": lookup_name}
+            self.get_raw,
+            ENDPOINT_GET_LOOKUP_DATA,
+            "Failed to retrieve lookup data",
+            params={"lookupName": lookup_name},
         )
 
     def get_template_structure(self) -> Dict[str, Any]:
         return self._make_request(
-            self.get_raw, ENDPOINT_GET_TEMPLATE_STRUCTURE, "Failed to retrieve template structure"
+            self.get_raw,
+            ENDPOINT_GET_TEMPLATE_STRUCTURE,
+            "Failed to retrieve template structure",
         )
 
     def import_franchises_ui_data(
@@ -125,7 +165,9 @@ class EsgClient(HttpClient):
         data_not_available: bool = False,
         data_not_available_comment: Optional[str] = None,
     ) -> Dict[str, Any]:
-        rows = [{"data": data, "index": i + 1} for i, data in enumerate(franchises_data)]
+        rows = [
+            {"data": data, "index": i + 1} for i, data in enumerate(franchises_data)
+        ]
         template_data = {"franchisesTable": {"rows": rows}}
 
         return self._import_ui_data(
@@ -165,10 +207,16 @@ class EsgClient(HttpClient):
     ) -> Dict[str, Any]:
         template_data = {
             "equityInvestmentsTable": {
-                "rows": [{"data": data, "index": i + 1} for i, data in enumerate(equity_investments_data)]
+                "rows": [
+                    {"data": data, "index": i + 1}
+                    for i, data in enumerate(equity_investments_data)
+                ]
             },
             "projectFinanceTable": {
-                "rows": [{"data": data, "index": i + 1} for i, data in enumerate(project_finance_data)]
+                "rows": [
+                    {"data": data, "index": i + 1}
+                    for i, data in enumerate(project_finance_data)
+                ]
             },
         }
 
@@ -273,14 +321,28 @@ class EsgClient(HttpClient):
         )
 
     def import_generic_data(
-        self, entity_id: int, reporting_period_id: int, template_id: int, data: List[Dict[str, Any]]
+        self,
+        entity_id: int,
+        reporting_period_id: int,
+        template_id: int,
+        data: List[Dict[str, Any]],
     ) -> Dict[str, Any]:
         rows = [
-            {"columns": [{"name": key, "value": str(value)} for key, value in row_data.items()]} for row_data in data
+            {
+                "columns": [
+                    {"name": key, "value": str(value)}
+                    for key, value in row_data.items()
+                ]
+            }
+            for row_data in data
         ]
 
         template_data = {"rows": rows}
 
         return self._import_ui_data(
-            ENDPOINT_IMPORT_GENERIC_DATA, entity_id, reporting_period_id, template_data, template_id=template_id
+            ENDPOINT_IMPORT_GENERIC_DATA,
+            entity_id,
+            reporting_period_id,
+            template_data,
+            template_id=template_id,
         )

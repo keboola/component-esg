@@ -27,7 +27,9 @@ class Configuration(BaseModel):
         try:
             match = re.match(r"(\d+)-.*?\s{3}(\d+)-", self.entity_period)
             if not match:
-                raise ValueError("Invalid format for 'entity_period'. Expected '123-Period name   456-Entity name'.")
+                raise ValueError(
+                    "Invalid format for 'entity_period'. Expected '123-Period name   456-Entity name'."
+                )
             self.reporting_period_id = int(match.group(1))
             self.entity_id = int(match.group(2))
         except Exception as e:
