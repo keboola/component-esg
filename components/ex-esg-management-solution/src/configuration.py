@@ -10,7 +10,7 @@ class Configuration(BaseModel):
     entity_period: str = ""
     reporting_period_id: int = 0
     entity_id: int = 0
-    endpoint: str = ""
+    endpoints: list[str] = ["templates_structure", "lookup_tables"]
     template_id: str = ""
     debug: bool = False
 

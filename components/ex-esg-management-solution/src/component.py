@@ -28,8 +28,13 @@ class Component(ComponentBase):
     def run(self):
         self.client = EsgClient(self.refresh_tokens())
 
-        if self.params.endpoint == "download_lookup_tables":
-            self.download_lookup_tables()
+        templates = self.client.get_template_structure()
+
+        if "lookup_tables" in self.params.endpoints:
+            self.export_lookup_tables(templates)
+
+        if "templates_structure" in self.params.endpoints:
+            self.export_templates_structure(templates)
 
     def refresh_tokens(self) -> str:
         statefile = self.get_state_file()
@@ -72,8 +77,8 @@ class Component(ComponentBase):
         )
         return data["id_token"]
 
-    def download_lookup_tables(self) -> None:
-        lookups = self.get_lookup_tables_names()
+    def export_lookup_tables(self, templates) -> None:
+        lookups = self.get_lookup_tables_names(templates)
 
         lookups.update(
             [
@@ -96,9 +101,8 @@ class Component(ComponentBase):
                     writer.writerow([row])
             self.write_manifest(out_table)
 
-    def get_lookup_tables_names(self) -> set[str]:
+    def get_lookup_tables_names(self, templates) -> set[str]:
         lookups = []
-        templates = self.client.get_template_structure()
 
         for template in templates:
             for column in template["columnsConfiguration"]:
@@ -111,6 +115,67 @@ class Component(ComponentBase):
                         )
 
         return set(lookups)
+
+    def export_templates_structure(self, templates) -> None:
+        """Export templates structure to CSV files.
+
+        Creates a CSV file for each template with the format: template_templateid_template_name.csv
+        The CSV contains the template's columns configuration with properties like columnType,
+        dbColumnName, disableValidation, excelColumnName, isRequired, mustBeInPeriod,
+        lookupName (for Lookup columns), and numberCondition (for numeric columns).
+
+        Args:
+            templates: List of template structures with their column configurations
+        """
+
+        for template in templates:
+            template_id = template.get("templateId", "")
+            template_name = template.get("templateName", "").replace(" ", "_")
+
+            file_name = f"template_{template_id}_{template_name}.csv"
+            out_table = self.create_out_table_definition(
+                name=file_name,
+                schema=[
+                    "columnType",
+                    "dbColumnName",
+                    "disableValidation",
+                    "excelColumnName",
+                    "isRequired",
+                    "mustBeInPeriod",
+                    "lookupName",
+                    "numberCondition",
+                ],
+            )
+
+            with open(out_table.full_path, "w", newline="") as out:
+                writer = csv.writer(out)
+                writer.writerow(
+                    [
+                        "columnType",
+                        "dbColumnName",
+                        "disableValidation",
+                        "excelColumnName",
+                        "isRequired",
+                        "mustBeInPeriod",
+                        "lookupName",
+                        "numberCondition",
+                    ]
+                )
+
+                for column in template.get("columnsConfiguration", []):
+                    row = [
+                        column.get("columnType", ""),
+                        column.get("dbColumnName", ""),
+                        column.get("disableValidation", ""),
+                        column.get("excelColumnName", ""),
+                        column.get("isRequired", ""),
+                        column.get("mustBeInPeriod", ""),
+                        column.get("lookupName", ""),
+                        column.get("numberCondition", ""),
+                    ]
+                    writer.writerow(row)
+
+            self.write_manifest(out_table)
 
     @sync_action("list_clients")
     def list_clients(self) -> list[SelectElement]:

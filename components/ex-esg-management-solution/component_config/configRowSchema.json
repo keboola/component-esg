@@ -23,34 +23,21 @@
       },
       "propertyOrder": 1
     },
-    "endpoint": {
+    "endpoints": {
       "enum": [
-        "franchises",
-        "intensity_metrics",
-        "investments",
-        "water_storage",
-        "employee_benefits",
-        "social_protection",
-        "locations",
-        "non_compliance",
-        "generic",
-        "download_lookup_tables"
+        "templates_structure",
+        "lookup_tables"
       ],
-      "type": "string",
-      "title": "Compression",
-      "default": "generic",
+      "type": "array",
+      "title": "Endpoints",
+      "default": [
+        "templates_structure",
+        "lookup_tables"
+      ],
       "options": {
         "enum_titles": [
-          "Franchises",
-          "Intensity metrics",
-          "Investments",
-          "Water storage",
-          "Employee benefits",
-          "Social protection",
-          "Locations",
-          "Non compliance",
-          "Generic",
-          "Download lookup tables"
+          "Templates structure",
+          "Lookup tables"
         ]
       },
       "required": true,

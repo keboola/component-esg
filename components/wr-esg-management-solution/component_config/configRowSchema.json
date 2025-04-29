@@ -33,11 +33,10 @@
         "social_protection",
         "locations",
         "non_compliance",
-        "generic",
-        "download_lookup_tables"
+        "generic"
       ],
       "type": "string",
-      "title": "Compression",
+      "title": "Endpoint",
       "default": "generic",
       "options": {
         "enum_titles": [
@@ -49,8 +48,7 @@
           "Social protection",
           "Locations",
           "Non compliance",
-          "Generic",
-          "Download lookup tables"
+          "Generic"
         ]
       },
       "required": true,
