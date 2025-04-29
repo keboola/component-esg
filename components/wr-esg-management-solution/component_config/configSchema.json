@@ -1,0 +1,26 @@
+{
+  "type": "object",
+  "title": "Connection",
+  "required": [
+    "client_id"
+  ],
+  "properties": {
+    "client_id": {
+      "enum": [],
+      "type": "string",
+      "items": {
+        "enum": [],
+        "type": "string"
+      },
+      "title": "Client ID",
+      "options": {
+        "async": {
+          "cache": false,
+          "label": "List Clients",
+          "action": "list_clients"
+        }
+      },
+      "propertyOrder": 1
+    }
+  }
+}

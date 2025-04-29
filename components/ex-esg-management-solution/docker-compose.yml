@@ -2,7 +2,7 @@ version: "2"
 services:
   # for development purposes
   dev:
-    build: .
+    build: ../..
     volumes:
         - ./:/code
         - ./data:/data
@@ -10,7 +10,7 @@ services:
       - KBC_DATADIR=./data
   test:
     # Use to run flake8 and unittests checks
-    build: .
+    build: ../..
     volumes:
       - ./:/code
       - ./data:/data
