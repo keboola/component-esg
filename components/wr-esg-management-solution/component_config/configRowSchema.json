@@ -1,0 +1,88 @@
+{
+  "type": "object",
+  "title": "Component configuration",
+  "required": [
+    "entity_period",
+    "endpoint"
+  ],
+  "properties": {
+    "entity_period": {
+      "enum": [],
+      "type": "string",
+      "items": {
+        "enum": [],
+        "type": "string"
+      },
+      "title": "Reporting Period ID  +  Entity ID",
+      "options": {
+        "async": {
+          "cache": false,
+          "label": "List Reporting Periods and Entities",
+          "action": "list_entities_with_periods"
+        }
+      },
+      "propertyOrder": 1
+    },
+    "endpoint": {
+      "enum": [
+        "franchises",
+        "intensity_metrics",
+        "investments",
+        "water_storage",
+        "employee_benefits",
+        "social_protection",
+        "locations",
+        "non_compliance",
+        "generic",
+        "download_lookup_tables"
+      ],
+      "type": "string",
+      "title": "Compression",
+      "default": "generic",
+      "options": {
+        "enum_titles": [
+          "Franchises",
+          "Intensity metrics",
+          "Investments",
+          "Water storage",
+          "Employee benefits",
+          "Social protection",
+          "Locations",
+          "Non compliance",
+          "Generic",
+          "Download lookup tables"
+        ]
+      },
+      "required": true,
+      "propertyOrder": 2
+    },
+    "template_id": {
+      "enum": [],
+      "type": "string",
+      "items": {
+        "enum": [],
+        "type": "string"
+      },
+      "title": "Report Template ID",
+      "options": {
+        "async": {
+          "cache": false,
+          "label": "List Templates",
+          "action": "list_templates"
+        },
+        "dependencies": {
+          "endpoint": "generic"
+        }
+      },
+      "propertyOrder": 3
+    },
+    "debug": {
+      "type": "boolean",
+      "title": "Debug mode",
+      "format": "checkbox",
+      "default": false,
+      "description": "If enabled, the component will produce detailed logs",
+      "propertyOrder": 4
+    }
+  }
+}

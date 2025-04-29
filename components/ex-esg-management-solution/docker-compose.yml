@@ -1,0 +1,25 @@
+version: "2"
+services:
+  # for development purposes
+  dev:
+    build:
+      context: ../../
+      dockerfile: components/ex-esg-management-solution/Dockerfile
+    volumes:
+      - ./:/code
+      - ./data:/data
+    environment:
+      - KBC_DATADIR=./data
+  test:
+    # Use to run flake8 and unittests checks
+    build:
+      context: ../..
+      dockerfile: components/wr-esg-management-solution/Dockerfile
+    volumes:
+      - ./:/code
+      - ./data:/data
+    environment:
+      - KBC_DATADIR=./data
+    command:
+      - /bin/sh
+      - /code/scripts/build_n_test.sh
