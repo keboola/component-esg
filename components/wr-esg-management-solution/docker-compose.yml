@@ -2,10 +2,12 @@ version: "2"
 services:
   # for development purposes
   dev:
-    build: ../..
+    build:
+      context: ../../
+      dockerfile: components/wr-esg-management-solution/Dockerfile
     volumes:
-        - ./:/code
-        - ./data:/data
+      - ./:/code
+      - ./data:/data
     environment:
       - KBC_DATADIR=./data
   test:
