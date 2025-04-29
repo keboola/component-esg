@@ -172,7 +172,7 @@ jobs:
           tag: ${{ needs.check_version.outputs.image_tag }}
           configs: ${{ env.KBC_TEST_PROJECT_CONFIGS }}
 
-  deploy:
+  deploy-prod:
     name: Deploy to KBC and update Developer Portal
     needs: [ check_version, build]
     if: needs.check_version.outputs.should_deploy == 'true'
@@ -199,4 +199,33 @@ jobs:
         run: |
           cd ${{ inputs.component_dir }}
           chmod +x scripts/developer_portal/*.sh
-          scripts/developer_portal/update_properties.sh 
+          scripts/developer_portal/update_properties.sh
+
+  deploy-stage:
+    name: Deploy to KBC and update Developer Portal
+    needs: [ check_version, build]
+    if: needs.check_version.outputs.should_deploy == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set Developer Portal Tag
+        uses: keboola/action-set-tag-developer-portal@master
+        with:
+          vendor: ${{ inputs.kbc_developerportal_vendor }}
+          app_id: ${{ inputs.kbc_developerportal_app }}-stage
+          username: ${{ secrets.KBC_DEVELOPERPORTAL_USERNAME }}
+          password: ${{ secrets.KBC_DEVELOPERPORTAL_PASSWORD }}
+          tag: ${{ needs.check_version.outputs.image_tag }}
+
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Update developer portal properties
+        env:
+          KBC_DEVELOPERPORTAL_USERNAME: ${{ secrets.KBC_DEVELOPERPORTAL_USERNAME }}
+          KBC_DEVELOPERPORTAL_PASSWORD: ${{ secrets.KBC_DEVELOPERPORTAL_PASSWORD }}
+          KBC_DEVELOPERPORTAL_VENDOR: ${{ inputs.kbc_developerportal_vendor }}
+          KBC_DEVELOPERPORTAL_APP: ${{ inputs.kbc_developerportal_app }}
+        run: |
+          cd ${{ inputs.component_dir }}
+          chmod +x scripts/developer_portal/*.sh
+          scripts/developer_portal/update_properties.sh
