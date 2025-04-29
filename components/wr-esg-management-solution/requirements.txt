@@ -1,7 +1,0 @@
-keboola.component
-keboola.utils
-keboola.http-client
-freezegun
-mock
-pydantic
-wurlitzer

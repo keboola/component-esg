@@ -14,7 +14,8 @@ from keboola.component.sync_actions import SelectElement
 from wurlitzer import pipes
 
 from configuration import Configuration
-from esg.client import EsgClient
+# from components.common.src.esg_client import EsgClient
+from common.src.esg_client import EsgClient
 
 
 class Component(ComponentBase):
