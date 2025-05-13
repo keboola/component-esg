@@ -71,7 +71,15 @@ class EsgClient(HttpClient):
 
             return response.json()
         except Exception as e:
-            raise UserException(f"{error_message}: {e}")
+            try:
+                title = e.response.json().get("title")
+                message = ""
+                for k, v in e.response.json().get("errors").items():
+                    message += f"{k}: {v}\n"
+
+                raise UserException(f"{error_message}\n {title}\n {message}")
+            except Exception:
+                raise UserException(f"{error_message}: {e}")
 
     def _import_ui_data(
         self,
