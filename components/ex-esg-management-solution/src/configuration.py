@@ -13,7 +13,7 @@ class Configuration(BaseModel):
     endpoints: list[str] = ["templates_structure", "lookup_tables"]
     debug: bool = False
 
-    @field_validator("client_id", "template_id")
+    @field_validator("client_id")
     def split_id_string(cls, v):
         if v != "" and isinstance(v, str):
             return int(v.split("-", 1)[0])
