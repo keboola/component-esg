@@ -7,6 +7,7 @@
   "properties": {
     "client_id": {
       "enum": [],
+      "default": "",
       "type": "string",
       "items": {
         "enum": [],

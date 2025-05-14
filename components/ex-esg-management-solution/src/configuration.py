@@ -11,7 +11,6 @@ class Configuration(BaseModel):
     reporting_period_id: int = 0
     entity_id: int = 0
     endpoints: list[str] = ["templates_structure", "lookup_tables"]
-    template_id: str = ""
     debug: bool = False
 
     @field_validator("client_id", "template_id")

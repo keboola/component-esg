@@ -49,7 +49,7 @@ class EsgClient(HttpClient):
         else:
             base_url = "https://esg-externalintegrationapi-keboola-prod.azurewebsites.net/api/"
 
-        super().__init__(base_url=base_url)
+        super().__init__(base_url=base_url, max_retries=3)
         if id_token:
             self.update_auth_header({"Authorization": f"Bearer {id_token}"})
 

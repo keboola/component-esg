@@ -8,6 +8,7 @@
   "properties": {
     "entity_period": {
       "enum": [],
+      "default": "",
       "type": "string",
       "items": {
         "enum": [],

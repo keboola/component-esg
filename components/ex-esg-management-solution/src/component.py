@@ -130,7 +130,8 @@ class Component(ComponentBase):
 
         for template in templates:
             template_id = template.get("templateId", "")
-            template_name = template.get("templateName", "").replace(" ", "").replace(",", "")
+            template_name = (template.get("templateName", "")
+                             .replace(" ", "").replace(",", "").replace("(", "-").replace(")", ""))
 
             file_name = f"template_{template_id}-{template_name}.csv"
             out_table = self.create_out_table_definition(

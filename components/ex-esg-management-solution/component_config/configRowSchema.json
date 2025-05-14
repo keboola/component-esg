@@ -8,6 +8,7 @@
   "properties": {
     "entity_period": {
       "enum": [],
+      "default": "",
       "type": "string",
       "items": {
         "enum": [],
@@ -47,26 +48,6 @@
       "required": true,
       "uniqueItems": true,
       "propertyOrder": 2
-    },
-    "template_id": {
-      "enum": [],
-      "type": "string",
-      "items": {
-        "enum": [],
-        "type": "string"
-      },
-      "title": "Report Template ID",
-      "options": {
-        "async": {
-          "cache": false,
-          "label": "List Templates",
-          "action": "list_templates"
-        },
-        "dependencies": {
-          "endpoint": "generic"
-        }
-      },
-      "propertyOrder": 3
     },
     "debug": {
       "type": "boolean",
