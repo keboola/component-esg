@@ -26,7 +26,7 @@ class Component(ComponentBase):
         self.client = None
 
     def run(self):
-        self.client = EsgClient(self.refresh_tokens())
+        self.client = EsgClient(self.environment_variables.component_id, self.refresh_tokens())
 
         templates = self.client.get_template_structure()
 
@@ -130,9 +130,9 @@ class Component(ComponentBase):
 
         for template in templates:
             template_id = template.get("templateId", "")
-            template_name = template.get("templateName", "").replace(" ", "_")
+            template_name = template.get("templateName", "").replace(" ", "").replace(",", "")
 
-            file_name = f"template_{template_id}_{template_name}.csv"
+            file_name = f"template_{template_id}-{template_name}.csv"
             out_table = self.create_out_table_definition(
                 name=file_name,
                 schema=[
@@ -181,7 +181,7 @@ class Component(ComponentBase):
     def list_clients(self) -> list[SelectElement]:
         out = StringIO()
         with pipes(stdout=out, stderr=out):
-            self.client = EsgClient(self.refresh_tokens())
+            self.client = EsgClient(self.environment_variables.component_id, self.refresh_tokens())
             clients = self.client.get_clients()
             return [
                 SelectElement(value=f"{client['id']}-{client['name']}")
@@ -192,7 +192,7 @@ class Component(ComponentBase):
     def list_entities_with_periods(self) -> list[SelectElement]:
         out = StringIO()
         with pipes(stdout=out, stderr=out):
-            self.client = EsgClient(self.refresh_tokens())
+            self.client = EsgClient(self.environment_variables.component_id, self.refresh_tokens())
             data = self.client.get_entities_with_periods(self.params.client_id)
 
             return [
@@ -205,7 +205,7 @@ class Component(ComponentBase):
     def list_entities(self) -> list[SelectElement]:
         out = StringIO()
         with pipes(stdout=out, stderr=out):
-            self.client = EsgClient(self.refresh_tokens())
+            self.client = EsgClient(self.environment_variables.component_id, self.refresh_tokens())
             entities = self.client.get_entities(self.params.client_id)
             return [
                 SelectElement(value=f"{value}-{label}")
@@ -216,7 +216,7 @@ class Component(ComponentBase):
     def list_reporting_periods(self) -> list[SelectElement]:
         out = StringIO()
         with pipes(stdout=out, stderr=out):
-            self.client = EsgClient(self.refresh_tokens())
+            self.client = EsgClient(self.environment_variables.component_id, self.refresh_tokens())
             entities = self.client.get_reporting_periods(self.params.client_id)
             return [
                 SelectElement(value=f"{value}-{label}")
@@ -227,7 +227,7 @@ class Component(ComponentBase):
     def list_templates(self) -> list[SelectElement]:
         out = StringIO()
         with pipes(stdout=out, stderr=out):
-            self.client = EsgClient(self.refresh_tokens())
+            self.client = EsgClient(self.environment_variables.component_id, self.refresh_tokens())
             templates = self.client.get_template_structure()
             return [
                 SelectElement(value=f"{val['templateId']}-{val['templateName']}")

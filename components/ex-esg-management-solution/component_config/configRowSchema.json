@@ -24,12 +24,16 @@
       "propertyOrder": 1
     },
     "endpoints": {
-      "enum": [
-        "templates_structure",
-        "lookup_tables"
-      ],
+      "items": {
+        "enum": [
+          "templates_structure",
+          "lookup_tables"
+        ],
+        "type": "string"
+      },
       "type": "array",
       "title": "Endpoints",
+      "format": "select",
       "default": [
         "templates_structure",
         "lookup_tables"
@@ -41,6 +45,7 @@
         ]
       },
       "required": true,
+      "uniqueItems": true,
       "propertyOrder": 2
     },
     "template_id": {

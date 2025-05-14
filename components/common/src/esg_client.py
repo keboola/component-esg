@@ -3,8 +3,6 @@ from typing import Any, Callable, Dict, List, Optional
 from keboola.component.exceptions import UserException
 from keboola.http_client import HttpClient
 
-BASE_URL = "https://esg-externalintegrationapi-keboola-stg.azurewebsites.net/api/"
-
 ENDPOINT_GET_CLIENTS = "ExternalIntegration/ClientData/GetClientIds"
 ENDPOINT_GET_ENTITIES_WITH_PERIODS = (
     "ExternalIntegration/ClientData/GetEntitiesWithReportingPeriods"
@@ -44,8 +42,14 @@ BATCHE_SIZE = 100
 
 
 class EsgClient(HttpClient):
-    def __init__(self, id_token: Optional[str] = None):
-        super().__init__(base_url=BASE_URL)
+    def __init__(self, component_id: str, id_token: Optional[str] = None):
+
+        if "-stage" in component_id:
+            base_url = "https://esg-externalintegrationapi-keboola-stg.azurewebsites.net/api/"
+        else:
+            base_url = "https://esg-externalintegrationapi-keboola-prod.azurewebsites.net/api/"
+
+        super().__init__(base_url=base_url)
         if id_token:
             self.update_auth_header({"Authorization": f"Bearer {id_token}"})
 
@@ -126,7 +130,7 @@ class EsgClient(HttpClient):
             self.get_raw, ENDPOINT_GET_CLIENTS, "Failed to retrieve clients"
         )
 
-    def get_entities_with_periods(self, client_id: int) -> Dict[str, Any]:
+    def get_entities_with_periods(self, client_id: str) -> Dict[str, Any]:
         return self._make_request(
             self.get_raw,
             ENDPOINT_GET_ENTITIES_WITH_PERIODS,
@@ -134,7 +138,7 @@ class EsgClient(HttpClient):
             params={"clientId": client_id},
         )
 
-    def get_entities(self, client_id: int) -> Dict[str, Any]:
+    def get_entities(self, client_id: str) -> Dict[str, Any]:
         return self._make_request(
             self.get_raw,
             ENDPOINT_GET_ENTITIES,
@@ -142,7 +146,7 @@ class EsgClient(HttpClient):
             params={"clientId": client_id},
         )
 
-    def get_reporting_periods(self, client_id: int) -> Dict[str, Any]:
+    def get_reporting_periods(self, client_id: str) -> Dict[str, Any]:
         return self._make_request(
             self.get_raw,
             ENDPOINT_GET_REPORTING_PERIODS,
